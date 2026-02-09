@@ -1,0 +1,7 @@
+{
+  "name": "Arrow Wound",
+  "description": "A precision clinical tool for wound measurement and assessment. Capture and analyze wound metrics with specialized directional tracking.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
