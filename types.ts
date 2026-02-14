@@ -54,6 +54,8 @@ export interface WoundAnalysisResult {
   clinicalNotes: string;
   skinToneObservation: string;
   accuracyConfidence: number;
+  calibrationMethod: 'sticker' | 'dime' | 'ruler' | 'visual_estimation';
+  markerDetected: boolean;
   // Learning Loop metadata
   isManualAdjustment?: boolean;
   originalValues?: {

@@ -27,11 +27,27 @@ export const analyzeWound = async (images: CapturedImage[]): Promise<WoundAnalys
   }
 
   const prompt = `
-    You are ArrowWound AI. Analyze ${images.length} images.
+    You are ArrowWound AI, a surgical-grade vision system. 
+    TASK: Analyze the provided clinical images of a wound.
+
+    PRECISION CALIBRATION & REFERENCE OBJECTS:
+    1. Search the images for one of the following "Reference Markers":
+       - A Dime (US 10-cent coin): Known diameter is exactly 17.91mm (1.791cm).
+       - A Measuring Ruler: If a ruler is present, read the visible markings to establish the scale.
+       - A Calibration Sticker: Typically a 1cm circular marker or QR code.
+    2. If a Dime or Ruler is found, it MUST be used as the ground truth for scaling. 
+    3. If NO reference object is found, fallback to visual estimation using orientation data and skin texture (less accurate).
+
+    ANALYSIS REQUIREMENTS:
+    - Identify exact wound boundaries.
+    - Calculate Length (longest axis) and Width (perpendicular to length).
+    - Estimate Depth based on oblique angles if available.
+    - Classify tissue: Epithelialization (pink), Granulation (red), Slough (yellow), Eschar (black).
+    - Observe peri-wound condition.
+
     ${calibrationContext}
-    1. Identify Wound Edges.
-    2. Estimate measurements using orientation data and visual cues.
-    3. Return exact JSON following the schema.
+
+    Return the analysis strictly in JSON format.
   `;
 
   const imageParts = images.map(img => ({
@@ -55,6 +71,11 @@ export const analyzeWound = async (images: CapturedImage[]): Promise<WoundAnalys
           widthCm: { type: Type.NUMBER },
           depthCm: { type: Type.NUMBER },
           areaCm2: { type: Type.NUMBER },
+          calibrationMethod: { 
+            type: Type.STRING, 
+            description: "Set to 'dime', 'ruler', 'sticker' if detected, otherwise 'visual_estimation'." 
+          },
+          markerDetected: { type: Type.BOOLEAN },
           lengthLine: {
             type: Type.OBJECT,
             properties: {
@@ -85,7 +106,7 @@ export const analyzeWound = async (images: CapturedImage[]): Promise<WoundAnalys
           clinicalNotes: { type: Type.STRING },
           accuracyConfidence: { type: Type.NUMBER }
         },
-        required: ["lengthCm", "widthCm", "depthCm", "areaCm2", "lengthLine", "widthLine", "tissueTypes", "periWoundAppearance", "clinicalNotes", "accuracyConfidence"]
+        required: ["lengthCm", "widthCm", "depthCm", "areaCm2", "calibrationMethod", "markerDetected", "lengthLine", "widthLine", "tissueTypes", "periWoundAppearance", "clinicalNotes", "accuracyConfidence"]
       }
     }
   });
@@ -93,7 +114,6 @@ export const analyzeWound = async (images: CapturedImage[]): Promise<WoundAnalys
   const text = response.text;
   if (!text) throw new Error("Empty response");
 
-  // Robust extraction to handle potential AI markdown wrappers
   const jsonMatch = text.match(/\{[\s\S]*\}/);
   const cleanJson = jsonMatch ? jsonMatch[0] : text;
   

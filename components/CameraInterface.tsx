@@ -143,6 +143,15 @@ const CameraInterface: React.FC<CameraInterfaceProps> = ({ onCapture, onCancel, 
         
         <div className={`absolute inset-0 border-[6px] transition-all duration-300 pointer-events-none z-10 ${isLeveled && hasSensorActivity ? 'border-green-500 opacity-40 shadow-[inset_0_0_100px_rgba(34,197,94,0.3)]' : 'border-transparent opacity-0'}`}></div>
 
+        {/* Reference Object Hint Overlay */}
+        <div className="absolute top-48 inset-x-0 flex flex-col items-center pointer-events-none z-30 space-y-2 opacity-50">
+          <div className="bg-slate-900/40 backdrop-blur-sm border border-white/20 px-4 py-2 rounded-full flex items-center gap-3">
+            <i className="fa-solid fa-coins text-yellow-400"></i>
+            <span className="text-[10px] font-black text-white uppercase tracking-widest">Place Dime or Ruler for Precision</span>
+            <i className="fa-solid fa-ruler-horizontal text-blue-400"></i>
+          </div>
+        </div>
+
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
           {!hasSensorActivity && !dismissSensorWarning && (
             <div className="pointer-events-auto bg-black/80 backdrop-blur-xl p-6 rounded-3xl border border-white/10 text-center max-w-xs space-y-4 animate-in zoom-in-95">
@@ -151,7 +160,7 @@ const CameraInterface: React.FC<CameraInterfaceProps> = ({ onCapture, onCancel, 
               </div>
               <div className="space-y-1">
                 <p className="text-white text-sm font-bold">Clinical Leveler Inactive</p>
-                <p className="text-white/60 text-[11px] leading-tight px-2">Orientation data is unavailable in this environment. You may proceed in Standard Mode.</p>
+                <p className="text-white/60 text-[11px] leading-tight px-2">Orientation data is unavailable. Precision Mode is recommended using a physical Dime or Ruler.</p>
               </div>
               <div className="flex flex-col gap-2">
                 <button 
@@ -181,12 +190,6 @@ const CameraInterface: React.FC<CameraInterfaceProps> = ({ onCapture, onCancel, 
               >
                 {isLeveled && <i className="fa-solid fa-check text-white text-[10px]"></i>}
               </div>
-
-              {viewType === CaptureView.OBLIQUE && !isLeveled && (
-                <div className="absolute -bottom-8 text-white/60 text-[10px] font-bold uppercase tracking-widest animate-pulse">
-                  Tilt to ~45°
-                </div>
-              )}
             </div>
           )}
         </div>
@@ -223,8 +226,8 @@ const CameraInterface: React.FC<CameraInterfaceProps> = ({ onCapture, onCancel, 
               </p>
               <p className="text-[11px] font-bold leading-tight">
                 {viewType === CaptureView.PLANAR 
-                  ? 'Hold phone flat and level above the wound.' 
-                  : 'Tilt to 45 degrees to capture depth detail.'}
+                  ? 'Center the wound and Dime/Ruler in frame.' 
+                  : 'Tilt for depth detail of boundaries.'}
               </p>
             </div>
           </div>
@@ -234,7 +237,7 @@ const CameraInterface: React.FC<CameraInterfaceProps> = ({ onCapture, onCancel, 
         <div className="absolute bottom-8 inset-x-0 px-6 text-center z-30">
           <div className={`py-3 px-6 rounded-2xl text-[11px] font-black uppercase tracking-widest inline-flex items-center gap-3 shadow-2xl border transition-all duration-300 ${isLeveled && hasSensorActivity ? 'bg-green-600 border-green-400 text-white scale-105' : 'bg-black/60 border-white/10 text-white/70'}`}>
             <i className={`fa-solid ${hasSensorActivity ? (isLeveled ? 'fa-circle-check animate-bounce' : 'fa-circle-notch fa-spin opacity-50') : 'fa-camera'}`}></i>
-            {hasSensorActivity ? (isLeveled ? 'Ready to Capture' : 'Align for Accuracy') : 'Standard Mode'}
+            {hasSensorActivity ? (isLeveled ? 'Calibration Locked' : 'Align for Accuracy') : 'Standard Mode'}
           </div>
         </div>
       </div>
@@ -258,11 +261,6 @@ const CameraInterface: React.FC<CameraInterfaceProps> = ({ onCapture, onCancel, 
         </div>
 
         <div className="flex items-center justify-center w-full relative">
-          <div className="absolute left-10 text-white/30 text-[10px] font-mono flex flex-col items-center">
-            <span className="text-[8px] font-bold text-white/20 uppercase mb-1">Tilt</span>
-            {hasSensorActivity ? `${Math.round(orientation.beta)}°` : '--'}
-          </div>
-
           <div className="relative flex items-center justify-center">
             <div className={`absolute w-24 h-24 rounded-full border-4 transition-all duration-500 ${isLeveled && hasSensorActivity ? 'border-green-500 opacity-100 scale-100' : 'border-white/10 opacity-0 scale-90'}`}></div>
             
@@ -274,11 +272,6 @@ const CameraInterface: React.FC<CameraInterfaceProps> = ({ onCapture, onCancel, 
                 <i className={`fa-solid fa-camera text-white transition-transform ${isLeveled && hasSensorActivity ? 'scale-110' : 'scale-90 opacity-70'}`}></i>
               </div>
             </button>
-          </div>
-
-          <div className="absolute right-10 text-white/30 text-[10px] font-mono flex flex-col items-center">
-             <span className="text-[8px] font-bold text-white/20 uppercase mb-1">Roll</span>
-             {hasSensorActivity ? `${Math.round(orientation.gamma)}°` : '--'}
           </div>
         </div>
       </div>

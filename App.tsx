@@ -7,11 +7,13 @@ import HistoryView from './components/HistoryView';
 import { analyzeWound } from './services/geminiService';
 
 const LOADING_MESSAGES = [
+  "Searching for Dime or Ruler...",
+  "Scanning for Calibration Marker...",
   "Analyzing Wound Topology...",
-  "Measuring Dimensions...",
+  "Calculating Pixel-to-Metric Ratio...",
   "Identifying Wound Edges...",
+  "Triangulating Wound Scale...",
   "Segmenting Surrounding Tissue...",
-  "Calculating Depth Mapping...",
   "Analyzing Tissue Composition...",
   "Synthesizing Clinical Report..."
 ];
